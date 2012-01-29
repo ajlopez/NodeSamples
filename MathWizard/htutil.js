@@ -16,6 +16,11 @@ exports.loadParams = function(req, res, next) {
 exports.navbar = function() {
     return ["<div class='navbar'>",
         "<p><a href='/'>Home</a></p>",
+        "<p><a href='/mult'>Multiply</a></p>",
+        "<p><a href='/square'>Square</a></p>",
+        "<p><a href='/fact'>Factorial</a></p>",
+        "<p><a href='/fibo'>Fibonacci</a></p>",
+        "<p><a href='/fiboa'>Async Fibonacci</a></p>",
         "</div>"].join('\n');
 }
 
@@ -26,7 +31,7 @@ exports.page = function(title, navbar, content) {
         "<td>{navbar}</td><td>{content}</td>",
         "</tr></table></body></html"
     ].join('\n')
-    .replace("{title}", title, "g")
-    .replace("{navbar}", navbar, "g")
-    .replace("{content}", content, "g");
+    .replace(/{title}/g, title)
+    .replace(/{navbar}/g, navbar)
+    .replace(/{content}/g, content);
 }

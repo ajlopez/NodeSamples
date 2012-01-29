@@ -8,6 +8,10 @@ var mapping = {};
 
 mapping['/'] = require('./home-node');
 mapping['/square'] = require('./square-node');
+mapping['/mult'] = require('./mult-node');
+mapping['/fact'] = require('./fact-node');
+mapping['/fibo'] = require('./fibo-node');
+mapping['/fiboa'] = require('./fiboa-node');
 
 var server = http.createServer(function (req, res) {
     htutil.loadParams(req, res, undefined);

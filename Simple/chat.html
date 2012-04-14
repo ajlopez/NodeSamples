@@ -1,0 +1,42 @@
+<script src="Scripts/socket.io.js"></script>
+<script src="Scripts/jquery-1.6.2.js"></script>
+<h1>The Ultimate Chat ;-)</h1>
+<script>
+	var socket = io.connect('http://localhost:8080');
+	
+    socket.on('chatMessage', newMessage);
+	
+	function newMessage(nickname, message) {
+		var content = $('<p>');
+		
+		if (nickname != null)
+			content.append($('<b>').append(nickname+":"));
+		else
+			content.append($('<b>').append("anonymous:"));
+			
+		content.append(' ' +message);
+			
+        $('#lines').append(content);
+	}
+  
+	function sendMessage(message)
+	{
+		socket.emit('sendMessage', message);
+		newMessage('me', message);
+	}
+  
+	function setNickname(nickname)
+	{
+		socket.emit('nickname', nickname);
+	}
+</script>
+<div>
+Your nickname: <input type="text" id="nickname">
+<button onclick="setNickname($('#nickname').val())">Set Nickname</button>
+</div>
+<div>
+<input type="text" id="message" size="50"/>
+<button onclick="sendMessage($('#message').val())">Send Message</button>
+</div>
+<div id="lines">
+</div>

@@ -25,7 +25,7 @@ exports.navbar = function() {
 }
 
 exports.page = function(title, navbar, content) {
-    return ["<html><head><title>{title}</title></head>",
+    return ["<html><head><title>{title}</title><link href='content/site.css' rel='stylesheet' type='text/css'></head>",
         "<body><h1>{title}</h1>",
         "<table><tr>",
         "<td>{navbar}</td><td>{content}</td>",

@@ -4,7 +4,7 @@ var htutil  = require('./htutil');
 express.createServer()
   .use(express.favicon())
   .use(express.logger())
-  .use('/files', express.static(__dirname + '/files'))
+  .use('/content', express.static(__dirname + '/content'))
   .use(express.router(function(app){
     app.get('/', 
       require('./home-node').get);

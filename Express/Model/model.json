@@ -1,0 +1,27 @@
+
+{
+	"title": "Dynamic Site",
+	
+	"pages": [
+		{
+			"name": "home",
+			"title": "Home",
+			"url": "/",
+			"content": "<div>Welcome to this dynamic site</div>"
+		},
+		
+		{
+			"name": "customers",
+			"title": "Customers",
+			"url": "/customer",
+			"content": "<div>No customer yet</div>"
+		},
+		
+		{
+			"name": "suppliers",
+			"title": "Suppliers",
+			"url": "/supplier",
+			"content": "<div>No supplier yet</div>"
+		}
+	]
+}

@@ -1,6 +1,10 @@
 # Express Samples
 
-These samples use Express web application framework. Install in this directory running:
+These samples use Express web application framework. Install it in this directory running:
 
-    npm install express
+```
+npm install express
+```
+
+
 

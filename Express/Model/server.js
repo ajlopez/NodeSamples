@@ -54,12 +54,14 @@ function registerPages(app, pages)
 		registerPage(app, pages[k]);
 }
 
-express.createServer()
-  .use(express.favicon())
+var app = express();
+
+app.use(express.favicon())
   .use(express.logger())
   .use('/content', express.static(__dirname + '/content'))
-  .use(express.router(function(app){
-		registerPages(app, model.pages);
-  })).listen(8000);
+  .use(app.router);
+  
+registerPages(app, model.pages);
+app.listen(8000);
   
 console.log('listening to http://localhost:8000');

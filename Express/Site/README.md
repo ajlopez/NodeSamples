@@ -4,7 +4,9 @@ This is an example based on Chapter 4 of [Node Web Development](http://www.amazo
 
 Start it with
 
-    node appnode.js
+```
+node appnode.js
+```
 	
 ## To do
 

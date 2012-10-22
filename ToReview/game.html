@@ -1,0 +1,38 @@
+<script src="Scripts/socket.io.js"></script>
+<script src="Scripts/jquery-1.6.2.js"></script>
+<h1>Game Test</h1>
+<script>
+	var socket = io.connect('http://localhost:8080');
+	
+    socket.on('command', newCommand);
+	
+	function newCommand(command) {
+		var content = $('<p>');
+			
+		content.append(JSON.stringify(command));
+			
+        $('#lines').append(content);
+	}
+  
+	function sendCommand(command)
+	{
+		socket.emit('command', command);
+		newCommand(command);
+	}
+  
+	function joinGame(gameId)
+	{
+		socket.emit('join', gameId);
+	}
+</script>
+<div>
+Game ID: <input type="text" id="gameId">
+<button onclick="joinGame($('#gameId').val())">Join</button>
+</div>
+<div>
+X: <input type="text" id="xval" size="3"/>
+Y: <input type="text" id="yval" size="3"/>
+<button onclick="sendCommand({ x: $('#xval').val(), y: $('#yval').val() })">Send Command</button>
+</div>
+<div id="lines">
+</div>

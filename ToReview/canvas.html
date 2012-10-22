@@ -1,0 +1,68 @@
+<script src="Scripts/jquery-1.6.2.js"></script>
+<h1>The Ultimate Paint ;-)</h1>
+<canvas id="canvas" width="500" height="800"/>
+<script>
+	
+    $(document).ready(function() {
+		var messages = new Array();
+		var paint;
+	
+		var canvas = document.getElementById('canvas');
+		context = canvas.getContext("2d");
+		var lastpoint = null;
+
+		$("#canvas").mousedown(function(e){
+			var mouseX = e.pageX - this.offsetLeft;
+			var mouseY = e.pageY - this.offsetTop;
+		
+			paint = true;
+			var newpoint = { x: e.pageX - this.offsetLeft, y: e.pageY - this.offsetTop};
+			addClick(null, newpoint);
+			lastpoint = newpoint;
+			redraw();
+		});
+
+		$("#canvas").mousemove(function(e){
+			if(paint){
+				var newpoint = { x: e.pageX - this.offsetLeft, y: e.pageY - this.offsetTop};
+				addClick(lastpoint, newpoint);
+				lastpoint = newpoint;
+				redraw();
+			}
+		});
+
+		$("#canvas").mouseup(function(e){
+			paint = false;
+		});
+		
+		function addClick(from, to)
+		{
+			var message = { from: from, to: to};
+			messages.push(message);
+		};
+		
+		function redraw()
+		{
+			canvas.width = canvas.width; // Clears the canvas
+  
+			//context.drawImage(image, 0, 0);
+			context.strokeStyle = "black";
+			context.lineJoin = "round";
+			context.lineWidth = 5;
+    			
+			for(var i=0; i < messages.length; i++)
+			{		
+				var message = messages[i];
+				context.beginPath();
+				if(message.from){
+					context.moveTo(message.from.x, message.from.y);
+				}else{
+					context.moveTo(message.to.x-1, message.to.y);
+				}
+				context.lineTo(message.to.x, message.to.y);
+				context.closePath();
+				context.stroke();
+			}
+		};
+	});
+</script>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TicTacToe</title>
+    <link href="Content/Site.css" rel="stylesheet" type="text/css" />
+    <script src="Scripts/jquery-1.6.2.js" type="text/javascript"></script>
+    <script src="Scripts/jQuery.tmpl.js" type="text/javascript"></script>
+    <script src="Scripts/knockout-1.2.1.js" type="text/javascript"></script>
+</head>
+<body>            
+    <script type="text/javascript" src="Scripts/flXHR-1.0.6/flXHR.js"></script>
+    <script type="text/javascript" src="Scripts/flXHR-1.0.6/jquery.flXHRproxy.js"></script>
+    <script src="Scripts/socket.io.js" type="text/javascript"></script>
+    <script src="Scripts/game/TicTacToeBoard.js" type="text/javascript"></script>
+    <script src="Scripts/game/TicTacToeGame.js" type="text/javascript"></script>
+    <script src="Scripts/game/TicTacToeViewModel.js" type="text/javascript"></script>
+    <script src="Scripts/game/TicTacToeNodeJsController.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+            //First check for canvas, show an "Upgrade your browser" screen if they don't have it.
+            var canvas = document.createElement('canvas');
+            if (canvas.getContext == null || canvas.getContext('2d') == null) {
+                window.location.assign("/TicTacToe/OldBrowser");
+            }
+    </script>
+
+    <img src="Content/winner.jpg" id="winner" style="display:none" data-bind="visible: playerColor() == winnerColor()" />
+    <img src="Content/looser.jpg" id="looser" style="display:none" data-bind="visible: playerColor() != winnerColor() && winnerColor() != TTTColor.Empty" /> 
+    <canvas id="board" style="margin:50px auto; display:block" width="950" height="950" data-bind="visible: winnerColor() == TTTColor.Empty"></canvas>
+
+    <script type="text/javascript">
+        var viewModel;
+        var gameId = getQueryVariable("id");
+        var isOwner = getQueryVariable("owner");
+
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return pair[1];
+                }
+            }
+        }
+
+        var nodeJsURL = "http://localhost:8080";  //"http://siegeofaperion-ppe.cloudapp.net:80";
+
+        function start() {
+            var canvas = document.getElementById("board");
+            var board = new TicTacToeBoard(canvas);
+            var game = new TicTacToeGame();
+            var socket = io.connect(nodeJsURL);
+
+            var controller = new TicTacToeController(viewModel, board, game, socket);
+
+            controller.setGameId(gameId);
+            controller.setIsOwner(isOwner);
+
+            controller.start();
+        }
+
+        $(function () {
+            viewModel = new TicTacToeViewModel();
+            ko.applyBindings(viewModel);
+       
+		    start();
+        });
+    </script>
+</body>
+</html>

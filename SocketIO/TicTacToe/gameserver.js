@@ -1,5 +1,4 @@
 var io = require('socket.io').listen(8080);
-var http = require('http');
 
 io.sockets.on('connection', function (socket) {
   socket.on('command', function (command) {

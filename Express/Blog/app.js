@@ -43,6 +43,21 @@ app.get('/', function(req, res){
     })
 });
 
+app.get('/blog/new', function(req, res) {
+    res.render('blog_new.jade', { 
+        title: 'New Post'
+    });
+});
+
+app.post('/blog/new', function(req, res){
+    articleProvider.save({
+        title: req.param('title'),
+        body: req.param('body')
+    }, function( error, docs) {
+        res.redirect('/')
+    });
+});
+
 app.get('/blog/:id', function(req, res) {
     articleProvider.findById(req.params.id, function(error, article) {
         res.render('blog_show.jade',

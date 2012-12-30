@@ -2,6 +2,7 @@
 var http_port = 8000;
 
 var http = require('http'),
+    querystring = require('querystring'),
     url = require('url');
     
 var customers = [
@@ -84,7 +85,7 @@ function doCustomerNew(req, res)
 {
     doHeader(res, 'New Customer');
     
-    res.write('<form action="/customer/newprocess">\n');
+    res.write('<form action="/customer/newprocess" method="post">\n');
     res.write('<fieldset>\n');
     res.write('<legend>Name</legend>\n');
     res.write('<div><input name="name"></div>\n');
@@ -120,8 +121,27 @@ var server = http.createServer(function (req, res) {
     req.params = data.query;
     var doPage = mapping[data.pathname];
     
-    if (doPage)
-        doPage(req,res);
+    if (doPage) {
+        if (req.method !== 'POST') {
+            doPage(req,res);
+            return;
+        }
+
+        // from http://blog.frankgrimm.net/2010/11/howto-access-http-message-body-post-data-in-node-js/
+        var fullBody = '';
+
+        req.on('data', function(chunk) {
+            // append the current chunk of data to the fullBody variable
+            fullBody += chunk.toString();
+        });
+            
+        req.on('end', function() {    
+            // parse the received body data
+            var decodedBody = querystring.parse(fullBody);
+            req.params = decodedBody;
+            doPage(req,res);
+        });
+    }
     else {
         res.writeHead(404, { 'Content-type': 'text/plain' });
         res.end("bad URL " + req.url);

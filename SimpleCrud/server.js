@@ -36,7 +36,7 @@ function doFooter(res)
     res.write('</html>');
 }
 
-function doHome(req, res, data)
+function doHome(req, res)
 {
     doHeader(res, 'Home');
     res.write('<div>Simple CRUD sample, in-memory model.</div>');
@@ -51,14 +51,14 @@ function doTBD(res)
     res.write('<div>[TBD]</div>\n');
 }
 
-function doCustomerView(req, res, data)
+function doCustomerView(req, res)
 {
     doHeader(res, 'Customer');
     doTBD(res);
     res.end();
 }
 
-function doCustomerList(req, res, data)
+function doCustomerList(req, res)
 {
     doHeader(res, 'Customers');
     
@@ -80,14 +80,14 @@ function doCustomerList(req, res, data)
     res.end();
 }
 
-function doCustomerNew(req, res, data)
+function doCustomerNew(req, res)
 {
     doHeader(res, 'New Customer');
     
     res.write('<form action="/customer/newprocess">\n');
     res.write('<fieldset>\n');
     res.write('<legend>Name</legend>\n');
-    res.write('<div><input type="name"></div>\n');
+    res.write('<div><input name="name"></div>\n');
     
     res.write('</fieldset>\n');
 
@@ -98,10 +98,10 @@ function doCustomerNew(req, res, data)
     res.end();
 }
 
-function doCustomerNewProcess(req, res, data)
+function doCustomerNewProcess(req, res)
 {
     maxid++;
-    var customer = { id: maxid, name:  data.query.name };
+    var customer = { id: maxid, name:  req.params.name };
     customers.push(customer);
     res.writeHead(302, { 'Location': '/customer' });
     res.end();
@@ -117,11 +117,11 @@ mapping['/customer/newprocess'] = doCustomerNewProcess;
 
 var server = http.createServer(function (req, res) {
     var data = url.parse(req.url, true);
-    
+    req.params = data.query;
     var doPage = mapping[data.pathname];
     
     if (doPage)
-        doPage(req,res,data);
+        doPage(req,res);
     else {
         res.writeHead(404, { 'Content-type': 'text/plain' });
         res.end("bad URL " + req.url);

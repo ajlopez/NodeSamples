@@ -3,6 +3,8 @@ var http_port = 8000;
 
 var http = require('http'),
     querystring = require('querystring'),
+    path = require('path'),
+    fs = require('fs'),
     url = require('url');
     
 var customers = [
@@ -18,7 +20,9 @@ function doHeader(res, title)
     res.writeHead(200, {'content-type': 'text/html'});
     res.write('<html><head><title>');
     res.write('CRUD Simple Sample: ' + title);
-    res.write('</title></head>');
+    res.write('</title>');
+    res.write('<link rel="stylesheet" href="/css/bootstrap.css">');
+    res.write('</head>');
     res.write('<body>');
     
     res.write('<div>');
@@ -62,10 +66,11 @@ function doCustomerView(req, res)
 function doCustomerList(req, res)
 {
     doHeader(res, 'Customers');
+    res.write('<div class="btn-group">\
+<a class="btn btn-primary" href="/customer/new">New Customer</a>\
+</div>');
     
-    res.write('<div><a href="/customer/new">New Customer</a></div>\n');
-    
-    res.write('<table>\n');
+    res.write('<table class="table-striped table-bordered" style="min-width: 500px;">\n');
     res.write('<tr><th>Id</th><th>Name</th></tr>\n');
     
     customers.forEach(function(customer) {
@@ -116,7 +121,24 @@ mapping['/customer/new'] = doCustomerNew;
 mapping['/customer/view'] = doCustomerView;
 mapping['/customer/newprocess'] = doCustomerNewProcess;
 
+var staticdir = path.join(__dirname, '/public');
+
+function sendStatic(req, res) {
+    var filename = path.join(staticdir, req.url);
+    console.log(filename);
+    fs.stat(filename, function(err, stat){
+        if (err || stat.isDirectory()) { res.writeHead(404, "File not found"); res.end(); return }
+        var stream = fs.createReadStream(filename);
+        stream.pipe(res);
+    });
+}
+
 var server = http.createServer(function (req, res) {
+    if (req.url.slice(0,5) === '/css/' && req.url.indexOf('..') == -1) {
+        sendStatic(req, res);
+        return;
+    }
+
     var data = url.parse(req.url, true);
     req.params = data.query;
     var doPage = mapping[data.pathname];

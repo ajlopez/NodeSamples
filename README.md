@@ -1,6 +1,7 @@
 # Node Samples
 
 Simple Node.js samples: console apps, tcp, http, express (with jade, mongodb, etc...), etc...
+Just updated for my February 2013 course, at Rosario, Argentina.
 
 ## To Do
 

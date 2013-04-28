@@ -86,20 +86,28 @@ function calculate(width, height, realcenter, imgcenter, realdelta, imgdelta) {
 
 	var realmin = realcenter - realwidth / 2;
 	var imgmin = imgcenter - imgheight / 2;
-
-	var sectorinfo = {
-		fromx: 0,
-		fromy: 0,
-		width: width,
-		height: height,
-		realminimum: realmin,
-		imgminimum: imgmin,
-		delta: realdelta,
-		maxiterations: colors.length,
-		maxvalue: 4
-	};
-
-	socket.emit('sectorinfo', sectorinfo);
+    
+    var subwidth = width / 10;
+    var subheight = height / 10;
+    
+    for (var k = 0; k < 10; k++)
+        for (var j = 0; j < 10; j++) {
+            var fromx = k * subwidth;
+            var fromy = j * subheight;
+            
+            var sectorinfo = {
+                fromx: fromx,
+                fromy: fromy,
+                width: subwidth,
+                height: subheight,
+                realminimum: realmin,
+                imgminimum: imgmin,
+                delta: realdelta,
+                maxiterations: colors.length,
+                maxvalue: 4
+            };
+            socket.emit('sectorinfo', sectorinfo);
+        }
 }
 
 var sector;

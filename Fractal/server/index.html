@@ -1,0 +1,173 @@
+<html>
+<head>
+<title>Fractal Rendering</title>
+<script src="/jquery-1.6.2.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+a {
+    text-decoration: none;
+}
+</style>
+</head>
+<body>
+<h1>Fractal Rendering</h1>
+<div>
+<a href="#" onclick="changeColors();">Change Colors</a>
+</div>
+<div>
+<canvas id="mycanvas" width="500" height="500"/>
+</div>
+<script>
+
+function getRandomColor() {
+    return Math.floor(Math.random() * 256).toString();
+}
+
+var ncolors = 2000;
+var colors = [];
+
+function generateColors(colors, ncolors) {
+	var rcolor = getRandomColor();
+	var gcolor = getRandomColor();
+	var bcolor = getRandomColor();
+	
+	for (var k = 0; k < ncolors; k++)
+		colors[k] = [ (k + rcolor) % 256, (k + gcolor) % 256, (k + rcolor*2) % 256 ];
+}
+
+function changeColors() {
+    generateColors(colors, ncolors);
+    drawSector(sector);
+}
+
+</script>
+
+<script>
+
+generateColors(colors, ncolors);
+var canvas = document.getElementById("mycanvas");
+var width = canvas.width;
+var height = canvas.height;
+var ctx = canvas.getContext("2d");
+var canvasData = ctx.getImageData(0, 0, width, height);
+
+// http://stackoverflow.com/questions/7812514/drawing-a-dot-on-html5-canvas
+// That's how you define the value of a pixel //
+function drawPixel (x, y, r, g, b, a) {
+    var index = (x + y * width) * 4;
+
+    canvasData.data[index + 0] = r;
+    canvasData.data[index + 1] = g;
+    canvasData.data[index + 2] = b;
+    canvasData.data[index + 3] = a;
+}
+
+// That's how you update the canvas, so that your //
+// modification are taken in consideration //
+function updateCanvas() {
+    ctx.putImageData(canvasData, 0, 0);
+}
+
+var realcenter = 0;
+var imgcenter = 0;
+var realdelta = 0.01;
+var imgdelta = 0.01;
+
+var socket = io.connect('http://localhost:3000');
+
+socket.on('sector', function (newsector) {
+    sector = newsector;
+    drawSector(sector);
+});
+
+function calculate(width, height, realcenter, imgcenter, realdelta, imgdelta) {
+	var realwidth = realdelta * width;
+	var imgheight = imgdelta * height;
+
+	var realmin = realcenter - realwidth / 2;
+	var imgmin = imgcenter - imgheight / 2;
+
+	var sectorinfo = {
+		fromx: 0,
+		fromy: 0,
+		width: width,
+		height: height,
+		realminimum: realmin,
+		imgminimum: imgmin,
+		delta: realdelta,
+		maxiterations: colors.length,
+		maxvalue: 4
+	};
+
+	socket.emit('sectorinfo', sectorinfo);
+}
+
+var sector;
+
+function calculateFractal() {
+    calculate(width, height, realcenter, imgcenter, realdelta, imgdelta);
+}
+
+function drawSector(sector) {
+    for (var x = 0; x < sector.width; x++)
+        for (var y = 0; y < sector.height; y++) {
+            var value = sector.values[y * sector.width + x];
+            var color = colors[value];
+            drawPixel(x + sector.fromx, y + sector.fromy, color[0], color[1], color[2], 255);
+        }
+
+    updateCanvas();
+}
+
+
+$(document).ready(function() {
+    calculateFractal();
+    
+    var startpoint;
+    var endpoint;
+    var isdown;
+    
+    $("#mycanvas").mousedown(function(e){
+        var mouseX = e.pageX - this.offsetLeft;
+        var mouseY = e.pageY - this.offsetTop;
+    
+        isdown = true;
+        startpoint = { x: mouseX, y: mouseY};
+    });
+
+    $("#mycanvas").mouseup(function(e){
+        if (!isdown)
+            return;
+            
+        isdown = false;
+        
+        var mouseX = e.pageX - this.offsetLeft;
+        var mouseY = e.pageY - this.offsetTop;
+        
+        var newwidth = Math.abs(startpoint.x - mouseX);
+        var newheight = Math.abs(startpoint.y - mouseY);
+        
+        if (newwidth === 0 || newheight === 0)
+            return;
+
+        var realwidth = realdelta * width;
+        var imgheight = imgdelta * height;
+        
+        var realmin = realcenter - realwidth / 2;
+        var imgmin = imgcenter - imgheight / 2;
+        
+        var newrealcenter = realmin + realdelta * (Math.min(startpoint.x, mouseX) + newwidth / 2);
+        var newimgcenter = imgmin + imgdelta * (Math.min(startpoint.y, mouseY) + newheight / 2);
+        
+        realdelta = realdelta * newwidth / width;
+        imgdelta = realdelta;
+        realcenter = newrealcenter;
+        imgcenter = newimgcenter;
+        
+        calculateFractal();
+    });
+});
+</script>
+
+</body>
+</html>

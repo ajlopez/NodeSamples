@@ -9,10 +9,10 @@ var express = require('express')
   , http = require('http')
   , path = require('path');
   
-var ArticleProvider = require('./articleprovider-memory').ArticleProvider;
-var articleProvider = new ArticleProvider();  
-// var ArticleProvider = require('./articleprovider-mongodb').ArticleProvider;  
-// var articleProvider = new ArticleProvider('localhost', 27017);;
+// var ArticleProvider = require('./articleprovider-memory').ArticleProvider;
+// var articleProvider = new ArticleProvider();  
+var ArticleProvider = require('./articleprovider-mongodb').ArticleProvider;  
+var articleProvider = new ArticleProvider('localhost', 27017);;
 
 var app = express();
 

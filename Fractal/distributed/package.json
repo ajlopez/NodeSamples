@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-	"socket.io": "latest",
-    "simplemessages": "0.0.4",
-    "express": "latest"
+	"socket.io": "0.9.16",
+    "simplemessages": "0.0.5",
+    "express": "3.4.8"
   }
 }

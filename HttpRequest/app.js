@@ -6,7 +6,7 @@ function download(pageurl)
 {
     var urldata = url.parse(pageurl);
     
-    options = {
+    var options = {
         host: urldata.hostname,
         port: urldata.port,
         path: urldata.path,
@@ -34,4 +34,19 @@ process.argv.forEach(function(arg) {
     if (arg.indexOf("http:")==0)
         download(arg);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
